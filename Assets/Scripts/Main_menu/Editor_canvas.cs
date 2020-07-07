@@ -1,13 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
+using System.Text.RegularExpressions;
 
 public class Editor_canvas : MonoBehaviour
 {
     public string path;
     public GameObject scenery_button;
     public Transform Scroll_content;
+    public string scn_name;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,12 +38,19 @@ public class Editor_canvas : MonoBehaviour
         {
             print("ACHTUNG ACHTUNG ERROR.EXE, Nie znaleziono folderu");
         }
-
+        print(path);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (String.IsNullOrEmpty(scn_name))
+        {
+            return;
+        }
+        GameObject gm = GameObject.Find(scn_name);
+        Scenery_button scnb = gm.GetComponent<Scenery_button>();
+        scnb.select = true;
+
     }
+
 }
