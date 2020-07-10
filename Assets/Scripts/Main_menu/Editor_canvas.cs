@@ -12,11 +12,23 @@ public class Editor_canvas : MonoBehaviour
     public GameObject scenery_button;
     public Transform Scroll_content;
     public string scn_name;
-
+    string Settings_save_path;
+    public GameObject scn_list;
 
     // Start is called before the first frame update
     void Start()
     {
+        var children = new List<GameObject>();
+        foreach (Transform child in scn_list.transform) children.Add(child.gameObject);
+        children.ForEach(child => Destroy(child));
+
+        Settings_save_path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\The_mikols\settings.xml";
+        StreamReader plik = new StreamReader(Settings_save_path);
+        plik.ReadLine();
+        string[] data = plik.ReadLine().Split(';');
+        path = data[1];
+        plik.Close();
+
         DirectoryInfo dir = new DirectoryInfo(path);
         if (dir.Exists)
         {

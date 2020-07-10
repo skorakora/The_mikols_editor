@@ -16,9 +16,17 @@ public class Scenery_button : MonoBehaviour
     public bool select;
     string image_name = "";
     public GameObject description_stripe;
+    string Settings_save_path;
     // Start is called before the first frame update
     void Start()
     {
+        Settings_save_path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\The_mikols\settings.xml";
+        StreamReader plik = new StreamReader(Settings_save_path);
+        plik.ReadLine();
+        string[] data = plik.ReadLine().Split(';');
+        file_path = data[1];
+        plik.Close();
+
         img = GetComponent<Image>();
         img.enabled = false;
         scn_text.text = scenery_name;
@@ -35,7 +43,7 @@ public class Scenery_button : MonoBehaviour
         string[] subdata;
         bool controll = false;
         StreamReader plik = new StreamReader(file_path + @"\" + scenery_name + ".scn");
-        GameObject description_parent = GameObject.Find("description_list");
+        GameObject description_parent = GameObject.Find("description_list"); //znajduje i usuwa wszystkie paski opisu przed wstawieniem nowych
         var children = new List<GameObject>();
         foreach (Transform child in description_parent.transform) children.Add(child.gameObject);
         children.ForEach(child => Destroy(child));
