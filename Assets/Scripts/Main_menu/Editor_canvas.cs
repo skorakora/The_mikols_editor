@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 
 public class Editor_canvas : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Editor_canvas : MonoBehaviour
     public string scn_name;
     string Settings_save_path;
     public GameObject scn_list;
+    public Text scenery_path_text;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +29,8 @@ public class Editor_canvas : MonoBehaviour
         plik.ReadLine();
         string[] data = plik.ReadLine().Split(';');
         path = data[1];
+        Static_data_class.SCN_folder_path = data[1];
+        scenery_path_text.text = "Obecnie szukam scenerii w:" + data[1];
         plik.Close();
 
         DirectoryInfo dir = new DirectoryInfo(path);
@@ -63,6 +67,11 @@ public class Editor_canvas : MonoBehaviour
         Scenery_button scnb = gm.GetComponent<Scenery_button>();
         scnb.select = true;
 
+    }
+
+    public void Start_editor()
+    {
+        SceneManager.LoadScene("Editor");
     }
 
 }

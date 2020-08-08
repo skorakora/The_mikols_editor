@@ -12,6 +12,7 @@ public class Main_editor : MonoBehaviour
 {
     public string scn_path;
     string scn_data;
+    string scn_folder_path;
     string[] scn_subdata;
     List<Vector3> Vertices = new List<Vector3>();
     List<int> Triangles = new List<int>();
@@ -20,10 +21,46 @@ public class Main_editor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StreamReader scenery_file = new StreamReader(scn_path);
+        scn_path = Static_data_class.SCN_path;
+        scn_folder_path = Static_data_class.SCN_folder_path;
+        StreamReader scenery_file = new StreamReader(scn_path);      
         while (scenery_file.EndOfStream == false)
         {
             scn_data = scenery_file.ReadLine();
+            if(scn_data.StartsWith("include"))
+            {
+                scn_subdata = scn_data.Split(new char[] { '\n', '\r', '\t', ' '}, StringSplitOptions.RemoveEmptyEntries);
+                if (scn_subdata[1].Contains("teren"))
+                {
+                    StreamReader include_file = new StreamReader(scn_folder_path + @"\" + scn_subdata[1]); //to docelowo zostanie usunięte, jak uda się ustandaryzować metodę zapisu
+                    while (include_file.EndOfStream == false)
+                    {
+                        scn_data = include_file.ReadLine();
+                        if (scn_data.StartsWith("node"))
+                        {
+                            scn_subdata = scn_data.Split(new char[] { '\n', '\r', '\t', ' ', ',', ';', '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (scn_subdata[4] == "triangles")
+                            {
+                                scn_data = include_file.ReadLine();
+                                while (false == scn_data.Contains("endtri"))
+                                {
+                                    scn_subdata = scn_data.Split(new char[] { '\n', '\r', '\t', ' ', ',', ';', '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
+                                    Vertices.Add(new Vector3(float.Parse(scn_subdata[0]), float.Parse(scn_subdata[1]), float.Parse(scn_subdata[2])));
+                                    Triangles.Add(triangle_counter);
+                                    scn_data = include_file.ReadLine();
+                                    triangle_counter++;
+                                }
+
+                            }
+
+
+                        }
+                    }
+                    include_file.Close();
+                }
+
+
+            }
             if (scn_data.StartsWith("node"))
             {
                 scn_subdata = scn_data.Split(new char[] { '\n', '\r', '\t', ' ', ',', ';', '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
@@ -33,24 +70,19 @@ public class Main_editor : MonoBehaviour
                     while (false == scn_data.Contains("endtri"))
                     {
                         scn_subdata = scn_data.Split(new char[] { '\n', '\r', '\t', ' ', ',', ';', '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
-                        print(scn_subdata[0] + scn_subdata[1]);
                         Vertices.Add(new Vector3(float.Parse(scn_subdata[0]), float.Parse(scn_subdata[1]), float.Parse(scn_subdata[2])));
                         Triangles.Add(triangle_counter);
                         scn_data = scenery_file.ReadLine();
-                        print(Triangles[triangle_counter]);
                         triangle_counter++;
                     }
 
-                    print("wczytano trójkąt");
                 }
 
 
             }
 
         }
-        print("zakończono wczytywanie");
         scenery_file.Close();
-        print("zamknięto plik");
         Mesh mesh = new Mesh();
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;

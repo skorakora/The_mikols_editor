@@ -4,7 +4,6 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
 using System;
-using UnityEditor;
 
 
 public class Settings_canvas : MonoBehaviour
@@ -13,6 +12,7 @@ public class Settings_canvas : MonoBehaviour
     public Text scenery_dir_text;
     public GameObject canvas;
 
+
     void Start()
     {
         scenery_dir_text.text = "Domyślnie scenerii szukam w:"+ System.IO.Directory.GetCurrentDirectory()+@"\scenery";
@@ -20,7 +20,7 @@ public class Settings_canvas : MonoBehaviour
 
     public void Select_scn_path()
     {
-        scenery_dir.text = EditorUtility.OpenFolderPanel("","","");
+
     }
 
     public void Save_settings()

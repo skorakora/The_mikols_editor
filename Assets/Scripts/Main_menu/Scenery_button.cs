@@ -43,6 +43,7 @@ public class Scenery_button : MonoBehaviour
         string[] subdata;
         bool controll = false;
         StreamReader plik = new StreamReader(file_path + @"\" + scenery_name + ".scn");
+        Static_data_class.SCN_path = file_path + @"\" + scenery_name + ".scn";
         GameObject description_parent = GameObject.Find("description_list"); //znajduje i usuwa wszystkie paski opisu przed wstawieniem nowych
         var children = new List<GameObject>();
         foreach (Transform child in description_parent.transform) children.Add(child.gameObject);
