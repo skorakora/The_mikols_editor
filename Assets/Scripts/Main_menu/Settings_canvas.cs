@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
+using UnityEditor;
 using System;
-
 
 public class Settings_canvas : MonoBehaviour
 {
@@ -20,6 +20,7 @@ public class Settings_canvas : MonoBehaviour
 
     public void Select_scn_path()
     {
+        scenery_dir.text = EditorUtility.OpenFolderPanel("Wybierz folder symulatora", "", "") + @"\scenery";
 
     }
 
