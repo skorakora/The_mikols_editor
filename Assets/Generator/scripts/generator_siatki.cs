@@ -99,19 +99,6 @@ public class generator_siatki : MonoBehaviour
         goto begin;
     }
 
-
-
-
-
-    // Update is called once per frame
-    void Update()
-    {
-
-
-    }
-
-
-
    public void GenerateScFile() //Tworzy plik .sc dla TD2
     {
         szerokość = int.Parse(Xsiatki.text);
@@ -280,8 +267,6 @@ public class generator_siatki : MonoBehaviour
             plik.Close();
         }
     }
-
-
    public void GenerateMesh() //Generuje siatkę dla podglądu
     {
         szerokość = int.Parse(Xsiatki.text);
@@ -295,8 +280,6 @@ public class generator_siatki : MonoBehaviour
         CreateShape();
         UpdateMesh();
     }
-
-
     void CreateShape() //algorytm do generowania siatki
     {
         byte[] imagedata = File.ReadAllBytes(input_heightmap);
