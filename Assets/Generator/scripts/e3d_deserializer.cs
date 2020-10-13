@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class e3d_deserializer : MonoBehaviour
@@ -23,8 +24,8 @@ public class e3d_deserializer : MonoBehaviour
         }
         // Zapiszmy se podstawowe informacje do zmiennych
         byte sliceVersion = e3dBytes[3]; // wersja kromki E3D
-        int sliceLength = e3dBytes[4]; // dlugosc kromki
-                                       // E3D0xxxxSUB0 jest juz przeanalizowane. Teraz analizujemy kromke SUB0
+        int sliceLength = e3dBytes[4]; // długość kromki
+        // E3D0xxxxSUB0 jest juz przeanalizowane. Teraz analizujemy kromke SUB0
 
         #region SUBx parameter reader [DISABLED]
         /*
@@ -127,10 +128,28 @@ public class e3d_deserializer : MonoBehaviour
         }; */
         #endregion
 
+        // Tu stworzymy liste submodeli o nazwie SUB
+        int SUBxes = Regex.Matches(e3dContent, "SUB[0-9]", RegexOptions.IgnoreCase).Count;
+        int i = 0;
+        List<SUBx> SUB = new List<SUBx>(); // Komórki submodeli
+        while (i < SUBxes)
+        {
+            SUB.Add(submodelProperities(i - 1, e3dBytes));
+            i++;
+        }
+
+        // Kromki submodeli (SUB) mamy juz za sobą
+        // Teraz czas na odczyt geometrii (VNT0)
+        // Odczytay to do listy VNT
+
+
+        // Tu trzeba bedzie odczytac wartosci VNT do tablicy trojkatow e3dTriangles -- Dla pruka
+
 
         return e3dModel; // Zwracamy gotowca
     }
 
+    // To odczytuje wartość submodelu w binarce
     int intSubmodelProperities(byte[] bytes, int Byte, int size)
     {
         // od 12 zaczyna sie sub0
@@ -155,6 +174,10 @@ public class e3d_deserializer : MonoBehaviour
         }
         return toReturn;
     }
+
+    // To stworzy element SUBx
+    // submodel (int SUBx)
+    // zawartość bajtów (e3dbytes)
     SUBx submodelProperities(int SUBx, byte[] e3dBytes)
     {
         if (SUBx > 0)
@@ -277,7 +300,7 @@ public class SUBx
     public int submodelName { get; set; }
     public int animationType { get; set; }
     public int submodelFlag { get; set; }
-    public int vievTransformMatrixNumber { get; set; }
+    public int viewTransformMatrixNumber { get; set; }
     public int numberOfVertices { get; set; }
     public int firstVertex { get; set; }
     public int materialNumber { get; set; }
@@ -292,4 +315,35 @@ public class SUBx
     public float minViewDistance { get; set; }
     public float[] lightParameters { get; set; }
     #endregion
+    #region Nie uzywane
+    /*
+    public SUBx(int nextSubmodelNumber, int firstChildSubmodel, int submodelType, int submodelName, int animationType, int viewTransformMatrixNumber, int numberOfVertices, int firstVertex, int materialNumber, int brightnessToggleThreshold, int brightnessTreshold)
+    {
+
+    }
+    public SUBx()
+    {
+        // Tylko po to aby nie było zamieszania ze nie dzialają zmienne cholera xD // Psycha siada
+    } 
+    */
+    #endregion
+
+
+}
+// Typ obiektu pod odczytywanie wierzchołków wraz z pozycjami mapy UV
+public class e3dTriangle
+{
+    Vector3 vector;
+    Vector2[] UV = new Vector2[3];
+    public e3dTriangle(float x, float y, float z, float uvX_X, float uvX_Y, float uvY_X, float uvY_Y, 
+        float uvZ_X, float uvZ_Y)
+    {
+        vector = new Vector3(x, y, z);
+        Vector2 uvX = new Vector2(uvX_X, uvX_Y);
+        Vector2 uvY = new Vector2(uvY_X, uvY_Y);
+        Vector2 uvZ = new Vector2(uvZ_X, uvZ_Y);
+        UV[0] = uvX;
+        UV[1] = uvY;
+        UV[2] = uvZ;
+    }
 }
