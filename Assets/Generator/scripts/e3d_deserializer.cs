@@ -143,7 +143,9 @@ public class e3d_deserializer : MonoBehaviour
         // Odczytay to do listy VNT
 
 
-        // Tu trzeba bedzie odczytac wartosci VNT do tablicy trojkatow e3dTriangles -- Dla pruka
+        // Tu trzeba bedzie odczytac wartosci VNT do tablicy trojkatow e3dTriangle -- Dla pruka
+
+        List<e3dTriangle> e3dTriangles;
 
 
         return e3dModel; // Zwracamy gotowca
@@ -333,12 +335,16 @@ public class SUBx
 // Typ obiektu pod odczytywanie wierzchołków wraz z pozycjami mapy UV
 public class e3dTriangle
 {
-    Vector3 vector;
+    Vector3[] vector = new Vector3[3];
     Vector2[] UV = new Vector2[3];
-    public e3dTriangle(float x, float y, float z, float uvX_X, float uvX_Y, float uvY_X, float uvY_Y, 
+    public e3dTriangle(float x1, float y1, float z1, float x2, float y2, float z2,
+        float x3, float y3, float z3, float uvX_X, float uvX_Y, float uvY_X, float uvY_Y, 
         float uvZ_X, float uvZ_Y)
     {
-        vector = new Vector3(x, y, z);
+        vector[0] = new Vector3(x1, y1, z1);
+        vector[1] = new Vector3(x2, y2, z2);
+        vector[2] = new Vector3(x3, y3, z3);
+
         Vector2 uvX = new Vector2(uvX_X, uvX_Y);
         Vector2 uvY = new Vector2(uvY_X, uvY_Y);
         Vector2 uvZ = new Vector2(uvZ_X, uvZ_Y);
