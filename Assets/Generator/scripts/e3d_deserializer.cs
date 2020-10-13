@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -145,9 +146,46 @@ public class e3d_deserializer : MonoBehaviour
 
         // Tu trzeba bedzie odczytac wartosci VNT do tablicy trojkatow e3dTriangle -- Dla pruka
 
-        List<e3dTriangle> e3dTriangles;
+        List<e3dTriangle> e3dTriangles = new List<e3dTriangle>();
 
+        #region Ogarnianie kromek VNT
+        // XYZIJKUV i to sie powtarza i to definiuje ci jeden punkt w swiecie 3D
+        // Gdy powyzsza konfiguracja powtorzy sie 3 razy to dodajesz do listy e3dTriangles
+        // pobrane wartosci
+        List<Vector3> position3D = new List<Vector3>();
+        List<Vector2> positionUV = new List<Vector2>();
+        i = 0;
+        int przesuniecie = 0; // wez sobie to wylicz tyle ci zostawiam
+        int triangles = przesuniecie / 8;
+        while(i < triangles)
+        {
+            float[] xyz = { e3dBytes[0 + przesuniecie],
+                e3dBytes[1 + przesuniecie], 
+                e3dBytes[2 + przesuniecie] };
+            position3D.Append<Vector3>(new Vector3(xyz[0], xyz[1], xyz[2]));
+            positionUV.Add(new Vector2(e3dBytes[7 + przesuniecie],
+                e3dBytes[8 + przesuniecie]));
+            przesuniecie = przesuniecie + 8;
+            i++;
+        }
+        // Teraz stworzymy trojkąty
 
+        int trianglesCount = position3D.Count / 3; // Liczba trojkątów
+        int currentTriangle = 0;
+        List<e3dTriangle> trojkaty = new List<e3dTriangle>();
+        while(currentTriangle < trianglesCount)
+        {
+            // To-do przesuniecia tablicy
+            trojkaty.Add(new e3dTriangle(position3D[currentTriangle + 0], position3D[currentTriangle + 1],
+                position3D[currentTriangle + 2], //
+                positionUV[currentTriangle + 0], positionUV[currentTriangle + 1], positionUV[currentTriangle + 2]));
+        }
+        List<Mesh> submodelMeshes = new List<Mesh>();
+        i = 0;
+
+        // Tu trza ogarnac metode
+        #endregion
+        // lista trojkaty zawiera wszystkie triangles z danego VNTx
         return e3dModel; // Zwracamy gotowca
     }
 
@@ -329,14 +367,12 @@ public class SUBx
     } 
     */
     #endregion
-
-
 }
 // Typ obiektu pod odczytywanie wierzchołków wraz z pozycjami mapy UV
 public class e3dTriangle
 {
-    Vector3[] vector = new Vector3[3];
-    Vector2[] UV = new Vector2[3];
+    public Vector3[] vector = new Vector3[3];
+    public Vector2[] UV = new Vector2[3];
     public e3dTriangle(float x1, float y1, float z1, float x2, float y2, float z2,
         float x3, float y3, float z3, float uvX_X, float uvX_Y, float uvY_X, float uvY_Y, 
         float uvZ_X, float uvZ_Y)
@@ -351,5 +387,23 @@ public class e3dTriangle
         UV[0] = uvX;
         UV[1] = uvY;
         UV[2] = uvZ;
+    }
+    public e3dTriangle(Vector3 a, Vector3 b, Vector3 c, Vector2 aUV, Vector2 bUV, Vector2 cUV)
+    {
+        vector[0] = a;
+        vector[1] = b;
+        vector[2] = c;
+        UV[0] = aUV;
+        UV[1] = bUV;
+        UV[2] = cUV;
+    }
+
+    public Vector3[] getVector()
+    {
+        return vector;
+    }
+    public Vector2[] getUV()
+    {
+        return UV;
     }
 }
