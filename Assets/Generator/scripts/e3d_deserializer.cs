@@ -27,21 +27,20 @@ public class e3d_deserializer : MonoBehaviour
         Debug.Log("Created model! Name: " + gameObjectName);
         Debug.Log("Loading binary format 3d model data from \"" + path + "\"...");
 
-        Int32 type  ;
-        Int32 size;
+        Int32 type ld_uint32(e3dBytes);
+        Int32 size ld_uint32(e3dBytes);
 
         Debug.Log("Finished loading 3d model data from \"" + path + "\"");
 
         return model;
     }
-    // deserialize little endian uint32
+	
     public static uint ld_uint32(byte[] s)
     {
         byte[] buf = new byte[4];
         //s.Read(buf, 4);
         
         uint v = (uint)((buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0]);
-        //C++ TO C# CONVERTER TODO TASK: There is no equivalent to 'reinterpret_cast' in C#:
         return (v);
     }
 
