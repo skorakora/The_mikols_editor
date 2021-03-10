@@ -6,7 +6,12 @@ using UnityEngine.SceneManagement;
 public class Editor_canvas_main : MonoBehaviour
 {
 
-    // Powrót do głónego menu
+    void Start()
+    {
+       Main main = new Main();
+       main.LoadScenery(Globals.SCN_path);
+    }
+    // Powrót do głównego menu
     public void Back_to_main_menu()
     {
         SceneManager.LoadScene("Main_menu");

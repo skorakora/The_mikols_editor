@@ -21,8 +21,8 @@ public class Main_editor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        scn_path = Static_data_class.SCN_path;
-        scn_folder_path = Static_data_class.SCN_folder_path;
+        scn_path = Globals.SCN_path;
+        scn_folder_path = Globals.SCN_folder_path;
         StreamReader scenery_file = new StreamReader(scn_path);      
         while (scenery_file.EndOfStream == false)
         {

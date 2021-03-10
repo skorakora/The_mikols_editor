@@ -29,7 +29,7 @@ public class Editor_canvas : MonoBehaviour
         plik.ReadLine();
         string[] data = plik.ReadLine().Split(';');
         path = data[1];
-        Static_data_class.SCN_folder_path = data[1];
+        Globals.SCN_folder_path = data[1];
         scenery_path_text.text = "Obecnie szukam scenerii w:" + data[1];
         plik.Close();
 

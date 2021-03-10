@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Static_data_class
+public static class Globals   //----------------------------------Global Variables--------------------------------------------------
 {
     private static string scn_path,scn_folder_path;
     public static string SCN_path
