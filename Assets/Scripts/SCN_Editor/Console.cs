@@ -8,13 +8,13 @@ using UnityEngine;
 public class Console
 {
     
-    List<string> commands = new List<string>();
-    int command_counter = 0;
+    public static List<string> commands = new List<string>();
+    public static int command_counter = 0;
 
 
 
 
-    void ExecuteCommand(string command)//commands list
+    public void ExecuteCommand(string command)//commands list
     {
 
         if (command.StartsWith("spawn"))
@@ -45,7 +45,7 @@ public class Console
         }
     }
 
-    void undo()
+    public void undo()
     {
         if (command_counter == 0)//nothing to undo
         {

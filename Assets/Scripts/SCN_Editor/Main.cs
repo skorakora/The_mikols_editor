@@ -10,15 +10,15 @@ public class Main: MonoBehaviour
 
     public void LoadScenery(string path)
     {
-        Debug.Log("start");
+        FileStream file = file.open
     }
 
-    void Deserialize()
+    public void Deserialize(FileStream file)
     {
 
     }
 
-    void Serialize()
+    public void Serialize(FileStream file)
     {
 
     }
