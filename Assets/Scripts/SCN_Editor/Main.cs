@@ -12,7 +12,7 @@ public class Main: MonoBehaviour
 
     public void Deserialize(string path) //scn deserializer Created by skorakora (Daniel Skorski)
     {
-        StreamReader file = new StreamReader(path);
+        FileStream file = new FileStream(path, FileMode.Open,FileAccess.Read);
         string token;
         while (true)
         {
@@ -103,7 +103,7 @@ public class Main: MonoBehaviour
 
     //----------------------------------------------deserializer - dyrektywy------------------------------------------------
 
-    private void Deserialize_Atmo(StreamReader file)
+    private void Deserialize_Atmo(FileStream file)
     {
         string token;
         while (true)
@@ -121,7 +121,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Camera(StreamReader file)
+    private void Deserialize_Camera(FileStream file)
     {
         string token;
         while (true)
@@ -139,7 +139,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Config(StreamReader file)
+    private void Deserialize_Config(FileStream file)
     {
         string token;
         while (true)
@@ -157,7 +157,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Description(StreamReader file)
+    private void Deserialize_Description(FileStream file)
     {
         string token;
         while (true)
@@ -175,7 +175,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Event(StreamReader file)
+    private void Deserialize_Event(FileStream file)
     {
         string token;
         while (true)
@@ -193,12 +193,12 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_FirstInit(StreamReader file)
+    private void Deserialize_FirstInit(FileStream file)
     {
         Debug.Log("First init");
     }
 
-    private void Deserialize_Include(StreamReader file)
+    private void Deserialize_Include(FileStream file)
     {
         string token;
         while (true)
@@ -216,7 +216,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Light(StreamReader file)//unused
+    private void Deserialize_Light(FileStream file)//unused
     {
         string token;
         while (true)
@@ -233,12 +233,12 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Lua(StreamReader file)
+    private void Deserialize_Lua(FileStream file)
     {
         parser.GetToken(file);//pobiera ścieżkę dostępu pliku lua
     }
 
-    private void Deserialize_Node(StreamReader file)
+    private void Deserialize_Node(FileStream file)
     {
         // to co tygryski lubią najbardziej - funcja node. WIP
         parser.GetToken(file);//range_max
@@ -246,7 +246,7 @@ public class Main: MonoBehaviour
 
     }
 
-    private void Deserialize_Origin(StreamReader file)
+    private void Deserialize_Origin(FileStream file)
     {
         string token;
         while (true)
@@ -264,12 +264,12 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Rotate(StreamReader file)
+    private void Deserialize_Rotate(FileStream file)
     {
         parser.GetToken(file);
     }
 
-    private void Deserialize_Sky(StreamReader file)
+    private void Deserialize_Sky(FileStream file)
     {
         string token;
         while (true)
@@ -287,7 +287,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Test(StreamReader file)
+    private void Deserialize_Test(FileStream file)
     {
         string token;
         while (true)
@@ -305,7 +305,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Time(StreamReader file)
+    private void Deserialize_Time(FileStream file)
     {
         string token;
         while (true)
@@ -323,7 +323,7 @@ public class Main: MonoBehaviour
         }
     }
 
-    private void Deserialize_Trainset(StreamReader file)
+    private void Deserialize_Trainset(FileStream file)
     {
         string token;
         while (true)
@@ -343,77 +343,77 @@ public class Main: MonoBehaviour
 
     //--------------------------------------------------deserializer - podfunkcje dyrektywy node----------------------------------------
 
-    private void Deserialize_Dynamic(StreamReader file,float range_max,float range_min)
+    private void Deserialize_Dynamic(FileStream file,float range_max,float range_min)
     {
         
     }
 
-    private void Deserialize_EventLauncher(StreamReader file, float range_max, float range_min)
+    private void Deserialize_EventLauncher(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Isolated(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Isolated(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Lines(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Lines(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Line_strip(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Line_strip(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Line_loop(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Line_loop(FileStream file, float range_max, float range_min)
     { 
 
     }
 
-    private void Deserialize_Memcell(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Memcell(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Model(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Model(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Sound(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Sound(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Track(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Track(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Traction(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Traction(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_TractionPowerSource(StreamReader file, float range_max, float range_min)
+    private void Deserialize_TractionPowerSource(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Triangles(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Triangles(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_Triangle_strip(StreamReader file, float range_max, float range_min)
+    private void Deserialize_Triangle_strip(FileStream file, float range_max, float range_min)
     {
 
     }
 
-    private void Deserialize_triangle_fan(StreamReader file, float range_max, float range_min)
+    private void Deserialize_triangle_fan(FileStream file, float range_max, float range_min)
     {
 
     }

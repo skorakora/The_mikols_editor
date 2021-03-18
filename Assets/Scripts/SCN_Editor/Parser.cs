@@ -7,14 +7,14 @@ using System;
 public class Parser : MonoBehaviour
 {
 
-    public string GetToken(StreamReader file)
+    public string GetToken(FileStream file)
     {
         List<byte> buf = new List<byte>(); //bufor z wczytywanym słowem
-
+        int _char;
 
         while (true)//pomija wszystko co nie jest literami
         {
-            int _char = file.Read();
+            _char = file.ReadByte();
             if (_char == -1) return null;
             if (IsLetter(file, _char))
             {
@@ -26,8 +26,8 @@ public class Parser : MonoBehaviour
 
         while (true)//czyta wyraz 
         {
-            int _char = file.Read();
-            if (_char == -1) return null;
+            _char = file.ReadByte();
+            if (_char == -1) break;
             if (IsLetter(file, _char))//sprawdza czy jest litera
             {
                 buf.Add(Convert.ToByte(_char));
@@ -42,7 +42,7 @@ public class Parser : MonoBehaviour
         return System.Text.Encoding.UTF8.GetString(buf.ToArray());
     }
 
-    private bool IsLetter(StreamReader file, int _char)
+    private bool IsLetter(FileStream file, int _char)
     {
 
         if (_char == -1)//sprawdza czy doszło do końca pliku
@@ -51,7 +51,7 @@ public class Parser : MonoBehaviour
         }
         else if (_char == 13)//sprawdza czy nie ma znaku końca linii
         {
-            _char = file.Read();
+            _char = file.ReadByte();
             if (_char == 10)
             {
                 return false;
