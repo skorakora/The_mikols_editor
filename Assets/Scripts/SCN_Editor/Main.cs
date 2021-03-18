@@ -7,18 +7,20 @@ using System.IO;
 
 public class Main: MonoBehaviour
 {
+    Parser parser = new Parser();
 
-    public void LoadScenery(string path)
+    void Start()
     {
-        FileStream file = file.open
+        Deserialize(Globals.SCN_path);
     }
 
-    public void Deserialize(FileStream file)
+    public void Deserialize(string path)
     {
+        StreamReader file = new StreamReader(path);
 
     }
 
-    public void Serialize(FileStream file)
+    public void Serialize(string path)
     {
 
     }
