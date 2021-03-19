@@ -4,15 +4,25 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.IO;
+using System;
 
-public class Main: MonoBehaviour
+public class Main : MonoBehaviour
 {
     Parser parser = new Parser();
+    List<GameObject> object_list = new List<GameObject>();//lista załadowanych obiektów (znajdujących się w pamięci nie na mapie)
+
+    public void LoadScenery(string path)
+    {
 
 
+        Deserialize(path);
+
+        Debug.Log("finished loading scenery!");
+    }
     public void Deserialize(string path) //scn deserializer Created by skorakora (Daniel Skorski)
     {
-        FileStream file = new FileStream(path, FileMode.Open,FileAccess.Read);
+
+        FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read);
         string token;
         while (true)
         {
@@ -85,6 +95,28 @@ public class Main: MonoBehaviour
             {
                 break;
             }
+            else if (token.StartsWith("//"))
+            {
+                //todo - wklepać to do parsera
+                int _char;
+                while (true)
+                {
+                    _char = file.ReadByte();
+                    if (_char == -1)
+                    {
+                        break;
+                    }
+                    if (_char == 13)
+                    {
+                        _char = file.ReadByte();
+                        if (_char == 10)
+                        {
+                            break;
+                        }
+                        break;
+                    }
+                }
+            }
             else
             {
                 Debug.Log("ERROR: unknown function");
@@ -92,7 +124,7 @@ public class Main: MonoBehaviour
         }
 
         file.Close();
-        Debug.Log("finished loading scenery!");
+
 
     }
 
@@ -198,7 +230,7 @@ public class Main: MonoBehaviour
         Debug.Log("First init");
     }
 
-    private void Deserialize_Include(FileStream file)
+    private void Deserialize_Include(FileStream file)//todo inc.deserializer
     {
         string token;
         while (true)
@@ -208,7 +240,18 @@ public class Main: MonoBehaviour
             {
                 return;
             }
-            //tutaj funkcje odpowiedzialne za include
+            else if (token.Contains(".inc"))
+            {
+                //todo inc.deserializer
+            }
+            else if (token.Contains(".scm"))
+            {
+                Deserialize(Globals.SCN_folder_path + "/" + token);
+            }
+            else if (token.Contains(".ctr"))
+            {
+                Deserialize(Globals.SCN_folder_path + "/" + token);
+            }
             else if (token == "end")
             {
                 return;
@@ -236,14 +279,69 @@ public class Main: MonoBehaviour
     private void Deserialize_Lua(FileStream file)
     {
         parser.GetToken(file);//pobiera ścieżkę dostępu pliku lua
-    }
+    } //unused in editor
 
     private void Deserialize_Node(FileStream file)
     {
         // to co tygryski lubią najbardziej - funcja node. WIP
-        parser.GetToken(file);//range_max
-        parser.GetToken(file);//Range_min
-
+        float range_max = float.Parse(parser.GetToken(file));//range_max
+        float range_min = float.Parse(parser.GetToken(file));//Range_min
+        string name = parser.GetToken(file);
+        string token = parser.GetToken(file);
+        if (token == null)
+        {
+            Debug.Log("ERROR: Empty node!");
+            return;
+        }
+        else if (token == "dynamic")
+        {
+            Deserialize_Dynamic(file, range_max, range_min);
+        }
+        else if (token == "eventlauncher")
+        {
+            Deserialize_EventLauncher(file, range_max, range_min);
+        }
+        else if (token == "isolated")
+        {
+            Deserialize_Isolated(file, range_max, range_min);
+        }
+        else if (token == "lines")
+        {
+            Deserialize_Lines(file, range_max, range_min);
+        }
+        //brakuje tu "line_strim" i "line_loop", nie wiem jak to jest definiowane
+        else if (token == "memcell")
+        {
+            Deserialize_Memcell(file, range_max, range_min);
+        }
+        else if (token == "model")
+        {
+            Deserialize_Model(file, range_max, range_min);
+        }
+        else if (token == "sound")
+        {
+            Deserialize_Sound(file, range_max, range_min);
+        }
+        else if (token == "track")
+        {
+            Deserialize_Track(file, range_max, range_min);
+        }
+        else if (token == "traction")
+        {
+            Deserialize_Traction(file, range_max, range_min);
+        }
+        else if (token == "tractionpowersource")
+        {
+            Deserialize_TractionPowerSource(file, range_max, range_min);
+        }
+        else if (token == "triangles")
+        {
+            Deserialize_Triangles(file, range_max, range_min);
+        }
+        else
+        {
+            Debug.Log("Error: Wrong node!");
+        }
     }
 
     private void Deserialize_Origin(FileStream file)
@@ -343,80 +441,203 @@ public class Main: MonoBehaviour
 
     //--------------------------------------------------deserializer - podfunkcje dyrektywy node----------------------------------------
 
-    private void Deserialize_Dynamic(FileStream file,float range_max,float range_min)
+    private void Deserialize_Dynamic(FileStream file, float range_max, float range_min)
     {
-        
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za obiekty dynamic
+            else if (token == "enddynamic")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_EventLauncher(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za event launcher
+            else if (token == "end")
+            {
+                return;
+            }
+        }
     }
 
-    private void Deserialize_Isolated(FileStream file, float range_max, float range_min)
+    private void Deserialize_Isolated(FileStream file, float range_max, float range_min)//unused
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            else if (token == "endisolated")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Lines(FileStream file, float range_max, float range_min)
     {
-
-    }
-
-    private void Deserialize_Line_strip(FileStream file, float range_max, float range_min)
-    {
-
-    }
-
-    private void Deserialize_Line_loop(FileStream file, float range_max, float range_min)
-    { 
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za linie
+            else if (token == "endline")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Memcell(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za memcell
+            else if (token == "endmemcell")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Model(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za model
+            else if (token == "endmodel")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Sound(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za obiekt sound
+            else if (token == "endsound")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Track(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za czas
+            else if (token == "endtrack")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Traction(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za sieć trakcyjną
+            else if (token == "endtraction")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_TractionPowerSource(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za tractionpowersource
+            else if (token == "end")
+            {
+                return;
+            }
+        }
     }
 
     private void Deserialize_Triangles(FileStream file, float range_max, float range_min)
     {
-
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                return;
+            }
+            //tutaj funkcje odpowiedzialne za czas
+            else if (token == "endtri")
+            {
+                return;
+            }
+        }
     }
 
-    private void Deserialize_Triangle_strip(FileStream file, float range_max, float range_min)
-    {
-
-    }
-
-    private void Deserialize_triangle_fan(FileStream file, float range_max, float range_min)
-    {
-
-    }
 
 
 

@@ -9,7 +9,7 @@ public class Editor_canvas_main : MonoBehaviour
     void Start()
     {
        Main main = new Main();
-       main.Deserialize(Globals.SCN_path);
+       main.LoadScenery(Globals.SCN_path);
     }
     // Powrót do głównego menu
     public void Back_to_main_menu()
