@@ -9,7 +9,7 @@ using System;
 public class Main : MonoBehaviour
 {
     Parser parser = new Parser();
-    List<GameObject> object_list = new List<GameObject>();//lista załadowanych obiektów (znajdujących się w pamięci nie na mapie)
+    List<GameObject> object_bank = new List<GameObject>();//lista załadowanych obiektów (znajdujących się w pamięci nie na mapie)
 
     public void LoadScenery(string path)
     {
@@ -18,7 +18,15 @@ public class Main : MonoBehaviour
         Deserialize(path);
 
         Debug.Log("finished loading scenery!");
+
+        for (int i = 0; i < 1000; i++)
+        {
+            object_bank.Add(new GameObject());
+        }
+
     }
+
+
     public void Deserialize(string path) //scn deserializer Created by skorakora (Daniel Skorski)
     {
 
