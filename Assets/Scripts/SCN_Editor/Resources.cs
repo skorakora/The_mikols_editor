@@ -137,8 +137,16 @@ namespace Resources
             public int vertexSize;
             public int firstVertexPosition;
             public int materialNumber;
-            public float submodelLigntOnThreshold;
-            //todo: Fill this
+            //public float submodelLigntOnBrightnessThreshold; - unused 4 bytes
+            //public float submodelLightOnThreshold; - unused 4 bytes
+            //public float[] RGBAcolorAmbient = new float[4]; - unused 16 bytes
+            public float[] RGBAdiffuseColor = new float[4];
+            //public float[] RGBAspecularColor = new float[4]; - unused 16 bytes
+            //public float[] RGBAselfillumColor = new float[4] - unused 16 bytes
+            public float lineSize;
+            public float maxDistance;
+            public float minDistance;
+            //public float[] lightParameters new float[8]; - unused 32 bytes
         }
 
         private Mesh CreateMesh(VNT VNT0)
