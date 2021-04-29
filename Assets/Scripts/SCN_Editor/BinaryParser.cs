@@ -17,6 +17,27 @@ public class BinaryParser
         return System.Text.Encoding.UTF8.GetString(buf); ;
     }
 
+    public string GetName(FileStream file) //to samo co get string, tylko że czyta do bajtu "0", używane tylko przy chunkach "TEX" i "NAM"
+    {
+        List<byte> buf = new List<byte>();
+        while (true)
+        {
+            int data = file.ReadByte();
+            if (data == -1)
+            {
+                Debug.LogError("E3D: reached end of file, while reading name. Is zero byte missing ?");
+                break;
+            }
+            if (data == 0)
+            {
+                break;
+            }
+            buf.Add(Convert.ToByte(data));
+        }
+
+        return System.Text.Encoding.UTF8.GetString(buf.ToArray());
+    }
+
     public float GetFloat(FileStream file) //czyta float z pliku binarnego
     {
         byte[] buf = new byte[4];
@@ -44,6 +65,26 @@ public class BinaryParser
             buf[i] = Convert.ToByte(file.ReadByte());
         }
         return System.BitConverter.ToUInt32(buf, 0);
+    }
+
+    public float[,] GetTransformMatrix(FileStream file)
+    {
+        float[,] TransformMatrix = new float[4, 4];
+        for (int i = 0; i < 4; i++)
+        {
+            for (int i2 = 0; i2 < 4; i2++)
+            {
+                TransformMatrix[i2, i] = GetFloat(file);
+            }
+        }
+        return TransformMatrix;
+    }
+    public void Skip(FileStream file,int offset)
+    {
+        for (int i = 0; i < offset; i++)
+        {
+            file.ReadByte();
+        }
     }
 
 
