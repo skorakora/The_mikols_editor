@@ -1,43 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class camera_movement : MonoBehaviour
 {
     // Co każdy frame
+    private float vel;
     void Update()
     {
+        
         if (Input.GetKey("w"))
         {
-            transform.Translate(0, 0, 1);
+            vel = (float) GameObject.Find("VelSlider").GetComponent<Slider>().value; //Pobieramy wartosc slidera po nazwie 
+            transform.Translate(0, 0, 1*vel); //mnożymy przez wartość slidera (min. 0.01 max 2)
+            //krótka adnotacja: pobranie wartości tylko wtedy gdy klikniemy guzik wpłynie na optymalizację "bez niczego"
         }
         if (Input.GetKey("s"))
         {
-            transform.Translate(0, 0, -1);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Translate(0, 0, -1*vel);
         }
         if (Input.GetKey("a"))
         {
-            transform.Translate(-1, 0, 0);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Translate(-1*vel, 0, 0);
         }
         if (Input.GetKey("d"))
         {
-            transform.Translate(1, 0, 0);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Translate(1*vel, 0, 0);
         }
         if (Input.GetKey("q"))
         {
-            transform.Translate(0, -1, 0);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Translate(0, -1*vel, 0);
         }
         if (Input.GetKey("e"))
         {
-            transform.Translate(0, 1, 0);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Translate(0, 1*vel, 0);
         }
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.Rotate (0, -1, 0);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Rotate (0, -1*vel, 0);
         }
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.Rotate (0, 1, 0);
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Rotate (0, 1*vel, 0);
         }
         if (Input.GetKey("escape"))
         {
