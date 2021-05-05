@@ -67,7 +67,7 @@ public class BinaryParser
         return System.BitConverter.ToUInt32(buf, 0);
     }
 
-    public float[,] GetTransformMatrix(FileStream file)
+    public float[,] GetTransformMatrix(FileStream file)// Czyta macierz transformacji z pliku binarnego
     {
         float[,] TransformMatrix = new float[4, 4];
         for (int i = 0; i < 4; i++)
@@ -79,7 +79,7 @@ public class BinaryParser
         }
         return TransformMatrix;
     }
-    public void Skip(FileStream file,int offset)
+    public void Skip(FileStream file,int offset) //Pomija o zadaną ilość bajtów
     {
         for (int i = 0; i < offset; i++)
         {

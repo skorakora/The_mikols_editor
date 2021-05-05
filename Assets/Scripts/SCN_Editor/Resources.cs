@@ -7,12 +7,16 @@ namespace Resources
 {
     public class E3D_model
     {
+        string ObjectName;
         BinaryParser parser = new BinaryParser();
         List<SUB> submodel_data = new List<SUB>();
         List<TEX> TEX0 = new List<TEX>();
         List<NAM> NAM0 = new List<NAM>();
         List<TRA> TRA0 = new List<TRA>();
+        List<GameObject> submodelList = new List<GameObject>();
         VNT VNT0 = new VNT();
+        Math math = new Math();
+
         //------------------------------------------methods---------------------------------------------------------
 
         public E3D_model(string path)
@@ -24,6 +28,7 @@ namespace Resources
             }
 
             FileStream file = File.OpenRead(path);
+            ObjectName = Path.GetFileNameWithoutExtension(path);
             if (!(parser.GetString(file, 4) == "E3D0"))
             {
                 Debug.LogError("ERROR: Unknown main chunk");
@@ -39,17 +44,19 @@ namespace Resources
                     size = (size - 8) / 256;
                     for (int i = 0; i < size; i++)
                     {
-                        SUB SUB0 = new SUB();
-                        SUB0.nextSubmodel = parser.GetInt(file);
-                        SUB0.firstSubmodel = parser.GetInt(file);
-                        SUB0.submodelType = parser.GetInt(file);
-                        SUB0.nameNumber = parser.GetInt(file);
-                        SUB0.animationType = parser.GetInt(file);
-                        SUB0.submodelFlags = parser.GetInt(file);
-                        SUB0.viewMatrixNumber = parser.GetInt(file);
-                        SUB0.vertexSize = parser.GetInt(file);
-                        SUB0.firstVertexPosition = parser.GetInt(file);
-                        SUB0.materialNumber = parser.GetInt(file);
+                        SUB SUB0 = new SUB
+                        {
+                            nextSubmodel = parser.GetInt(file),
+                            firstSubmodel = parser.GetInt(file),
+                            submodelType = parser.GetInt(file),
+                            nameNumber = parser.GetInt(file),
+                            animationType = parser.GetInt(file),
+                            submodelFlags = parser.GetInt(file),
+                            viewMatrixNumber = parser.GetInt(file),
+                            vertexSize = parser.GetInt(file),
+                            firstVertexPosition = parser.GetInt(file),
+                            materialNumber = parser.GetInt(file)
+                        };
                         parser.Skip(file, 4);//skip - submodelLigntOnBrightnessThreshold
                         parser.Skip(file, 4);//skip - submodelLightOnThreshold
                         parser.Skip(file, 16);//skip - RGBAcolorAmbient
@@ -80,9 +87,12 @@ namespace Resources
                     size = (size - 8) / 32;
                     for (int i = 0; i < size; i++)
                     {
+                        
                         VNT0.position.Add(new Vector3(parser.GetFloat(file), parser.GetFloat(file), parser.GetFloat(file)));
                         VNT0.normal.Add(new Vector3(parser.GetFloat(file), parser.GetFloat(file), parser.GetFloat(file)));
-                        VNT0.uv.Add(new Vector2(parser.GetFloat(file), parser.GetFloat(file)));
+                        float U = parser.GetFloat(file);
+                        float V = parser.GetFloat(file);
+                        VNT0.uv.Add(new Vector2(U,-V));
                     }
                 }
                 if (chunk_name == "TEX0") //loading material names
@@ -92,8 +102,10 @@ namespace Resources
                     long counterEnd = counterStart + size; //koniec czytanego fragmentu pliku
                     while (file.Position < counterEnd)
                     {
-                        TEX _TEX0 = new TEX();
-                        _TEX0.materialName = parser.GetName(file);
+                        TEX _TEX0 = new TEX
+                        {
+                            materialName = parser.GetName(file)
+                        };
                         TEX0.Add(_TEX0);
                     }
 
@@ -105,8 +117,10 @@ namespace Resources
                     long counterEnd = counterStart + size; //koniec czytanego fragmentu pliku
                     while (file.Position < counterEnd)
                     {
-                        NAM _NAM0 = new NAM();
-                        _NAM0.submodelName = parser.GetName(file);
+                        NAM _NAM0 = new NAM
+                        {
+                            submodelName = parser.GetName(file)
+                        };
                         NAM0.Add(_NAM0);
                     }
                 }
@@ -116,8 +130,10 @@ namespace Resources
                     size = (size - 8) / 64;
                     for (int i = 0; i < size; i++)
                     {
-                        TRA _TRA0 = new TRA();
-                        _TRA0.transformMatrix = parser.GetTransformMatrix(file);
+                        TRA _TRA0 = new TRA
+                        {
+                            transformMatrix = parser.GetTransformMatrix(file)
+                        };
                         TRA0.Add(_TRA0);
                     }
                 }
@@ -136,14 +152,122 @@ namespace Resources
 
         public GameObject ToGameObject()
         {
-            //TODO: convert to gameobject.
-            return null;
+
+            Math math = new Math();
+            GameObject root = new GameObject();
+            root.name = ObjectName;
+            submodelList = GetSubmodelList();
+
+            int submodelSize = submodel_data.ToArray().Length;
+            int currentObj = 0;
+            while (currentObj != -1)
+            {
+                if (submodel_data[currentObj].firstSubmodel != -1)
+                {
+                    SetChierarchy(currentObj);
+                }
+                submodelList[currentObj].transform.parent = root.transform;
+                currentObj = submodel_data[currentObj].nextSubmodel;
+            }
+
+            for (int i = 0; i < submodelSize; i++)
+            {
+                if (i >= TRA0.ToArray().Length)
+                {
+                    break;
+                }
+                GameObject obj = submodelList[i];
+                MeshFilter meshfilter = obj.GetComponent(typeof(MeshFilter)) as MeshFilter;
+                meshfilter.mesh =  CreateMesh(GetTransformMatrix(i), i);
+            }
+
+
+            for (int i = 0; i < submodelSize; i++)
+            {
+                //submodelList[i].name = NAM0[i].submodelName;
+            }
+
+            return root;
         }
 
 
         //----------------------------------------------------------------------------------------------------------
 
+        //-----------private methods-----------------
 
+        private void SetChierarchy(int rootNumber)
+        {
+            int currentObj = submodel_data[rootNumber].firstSubmodel;
+            while (currentObj != -1)
+            {
+                if (submodel_data[currentObj].firstSubmodel != -1)
+                {
+                    SetChierarchy(currentObj);
+                }
+                submodelList[currentObj].transform.parent = submodelList[rootNumber].transform;
+                currentObj = submodel_data[currentObj].nextSubmodel;
+            }
+
+        }
+
+        private float[,] GetTransformMatrix(int objNumber)
+        {
+            float[,] matrix = TRA0[objNumber].transformMatrix;
+            List<float[,]> transformMatrixList = new List<float[,]>();
+            GameObject pointer = submodelList[objNumber];
+            pointer = pointer.transform.parent.gameObject;
+            while (pointer.name != ObjectName)
+            {
+                transformMatrixList.Add(TRA0[int.Parse(pointer.name)].transformMatrix);
+                pointer = pointer.transform.parent.gameObject;
+            }
+            for (int i = transformMatrixList.ToArray().Length; i > 1; i--)
+            {
+                matrix = math.MultiplyTransformMatrix(matrix, transformMatrixList[i-2]);
+            }
+            return matrix;
+        }
+        private Mesh CreateMesh(float[,] transformMatrix, int objNumber)
+        {
+            Mesh mesh = new Mesh();
+            List<Vector3> vertices = new List<Vector3>();
+            List<Vector3> normals = new List<Vector3>();
+            List<Vector2> uv = new List<Vector2>();
+            List<int> triangles = new List<int>();
+            int position = submodel_data[objNumber].firstVertexPosition;
+            for (int i = 0; i < submodel_data[objNumber].vertexSize; i++)
+            {
+                
+                vertices.Add(math.MultiplyTransformMatrixByVector(transformMatrix, VNT0.position[position + i]));
+                normals.Add(math.MultiplyTransformMatrixByVector(transformMatrix, VNT0.normal[position + i]));
+                uv.Add(VNT0.uv[position + i]);
+                triangles.Add(i);
+            }
+
+            mesh.vertices = vertices.ToArray();
+            mesh.normals = normals.ToArray();
+            mesh.uv = uv.ToArray();
+            mesh.triangles = triangles.ToArray();
+
+            return mesh;
+        }
+
+        List<GameObject> GetSubmodelList()
+        {
+            List<GameObject> _objList = new List<GameObject>();
+            for (int i = 0; i < submodel_data.ToArray().Length; i++)
+            {
+                GameObject obj = new GameObject();
+                obj.name = submodel_data[i].nameNumber.ToString();
+                obj.AddComponent(typeof(MeshRenderer));
+                obj.AddComponent(typeof(MeshFilter));
+                _objList.Add(obj);
+            }
+            return _objList;
+        }
+
+
+        //--------------Data blocks-----------------
 
         private class VNT
         {
@@ -185,7 +309,7 @@ namespace Resources
         {
             public string submodelName;
         }
-        
+
         private class TRA
         {
             public float[,] transformMatrix = new float[4, 4];
