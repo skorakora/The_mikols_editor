@@ -51,6 +51,16 @@ public class camera_movement : MonoBehaviour
             vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
             transform.Rotate (0, 1*vel, 0);
         }
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Rotate((float) -0.01*vel, 0, 0);
+        }
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            vel = (float)GameObject.Find("VelSlider").GetComponent<Slider>().value;
+            transform.Rotate((float) 0.01*vel, 0, 0);
+        }
         if (Input.GetKey("escape"))
         {
             Application.Quit();
