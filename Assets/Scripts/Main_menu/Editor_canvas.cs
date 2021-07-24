@@ -38,7 +38,7 @@ public class Editor_canvas : MonoBehaviour
         {
             foreach (var file in dir.GetFiles())
             {
-                if (file.Name.Contains(".scn"))
+                if (file.Name.Contains(".scn") && !file.Name.StartsWith("$"))
                 {
                     string[] scnname;
                     scnname = file.Name.Split('.');
