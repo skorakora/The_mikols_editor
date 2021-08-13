@@ -5,24 +5,20 @@ using System.Text;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Globalization;
 
 public class Main : MonoBehaviour
 {
     Parser parser = new Parser();
-    List<GameObject> object_bank = new List<GameObject>();//lista załadowanych obiektów (znajdujących się w pamięci nie na mapie)
+    Scenery scenery = new Scenery();
 
+    Dictionary<string, Texture2D> TextureBank = new Dictionary<string, Texture2D>();
     public void LoadScenery(string path)
     {
 
 
         Deserialize(path);
-
         Debug.Log("finished loading scenery!");
-
-        for (int i = 0; i < 1000; i++)
-        {
-            object_bank.Add(new GameObject());
-        }
 
     }
 
@@ -292,8 +288,8 @@ public class Main : MonoBehaviour
     private void Deserialize_Node(FileStream file)
     {
         // to co tygryski lubią najbardziej - funcja node. WIP
-        float range_max = float.Parse(parser.GetToken(file));//range_max
-        float range_min = float.Parse(parser.GetToken(file));//Range_min
+        float range_max = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);//range_max
+        float range_min = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);//Range_min
         string name = parser.GetToken(file);
         string token = parser.GetToken(file);
         if (token == null)
@@ -344,7 +340,7 @@ public class Main : MonoBehaviour
         }
         else if (token == "triangles")
         {
-            Deserialize_Triangles(file, range_max, range_min);
+            Deserialize_Triangles(file, range_max, range_min, name);
         }
         else
         {
@@ -628,7 +624,50 @@ public class Main : MonoBehaviour
         }
     }
 
-    private void Deserialize_Triangles(FileStream file, float range_max, float range_min)
+    private void Deserialize_Triangles(FileStream file, float range_max, float range_min, string name)
+    {
+        string token;
+        while (true)
+        {
+            token = parser.GetToken(file);
+            if (token == null)
+            {
+                Debug.LogError("ERROR: can't load terrain!");
+                return;
+            }
+
+            Terrain terrain = new Terrain(name);
+
+            if (token == "material")
+            {
+                Deserialize_Material(file, terrain);
+            }
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+            token = Deserialize_Vertex(file, terrain, token);
+
+            if (token == "endtri")
+            {
+                string root = Globals.SCN_folder_path;
+                scenery.AddMesh(terrain.GetMesh(), range_max, range_min, terrain.GetName());
+                return;
+            }
+        }
+    }
+
+    //--------------------------------------------------deserializer - podfunkcje dyrektywy triangles----------------------------------------
+
+
+    private void Deserialize_Material(FileStream file, Terrain terrain)
     {
         string token;
         while (true)
@@ -638,16 +677,51 @@ public class Main : MonoBehaviour
             {
                 return;
             }
-            //tutaj funkcje odpowiedzialne za czas
-            else if (token == "endtri")
+            //tutaj funkcje odpowiedzialne za odczyt materiału (na razie pusto)
+            else if (token == "endmaterial")
             {
                 return;
             }
         }
     }
+    private string Deserialize_Vertex(FileStream file, Terrain terrain, string token)
+    {
+        Vector3 vertex = new Vector3();
+        Vector3 normal = new Vector3();
+        Vector2 UV = new Vector2();
 
+    start_vertex:
 
+        vertex.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        vertex.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        vertex.z = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        normal.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        normal.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        normal.z = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        UV.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+        UV.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
 
+        terrain.AddVertex(vertex, normal, UV);
 
+        token = parser.GetToken(file);
 
+        if (token == null)
+        {
+            return null;
+        }
+
+        if (token == "end")
+        {
+            goto start_vertex;
+        }
+
+        if (token == "endtri")
+        {
+            return "endtri";
+        }
+        Debug.LogWarning("Bad Triangle at:" + terrain.name);
+        return "endtri";
+    }
 }
+
+
