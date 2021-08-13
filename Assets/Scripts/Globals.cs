@@ -4,8 +4,19 @@ using UnityEngine;
 
 public static class Globals   //----------------------------------Global Variables--------------------------------------------------
 {
-    private static string scn_path,scn_folder_path;
-    public static string SCN_path
+    private static string simulator_root,scn_path,scn_folder_path;
+    public static string Simulator_root
+    {
+        get
+        {
+            return simulator_root;
+        }
+        set
+        {
+            simulator_root = value;
+        }
+    }
+    public static string SCN_path //do wywalenia - patrz github
     {
         get
         {
@@ -16,7 +27,7 @@ public static class Globals   //----------------------------------Global Variabl
             scn_path = value;
         }
     }
-    public static string SCN_folder_path
+    public static string SCN_folder_path //do wywalenia - patrz github
     {
         get
         {
