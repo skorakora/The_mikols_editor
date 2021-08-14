@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 namespace Resources
 {
@@ -322,5 +323,62 @@ namespace Resources
 
 
     }
+    public class ResourceLoader
+    {
+        public Texture2D LoadTexture(string tex_path)
+        {
+            Globals.Simulator_root = "C:\\Program Files (x86)\\Maszyna";
 
+
+            Debug.Log("Loading texture: " + Globals.Simulator_root + "\\textures\\" + tex_path+".dds");
+
+
+            if (!File.Exists(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds"))
+            {
+                Debug.LogError("ERROR: File not found");
+                return GetPinkTex();
+            }
+
+            byte[] ddsData = File.ReadAllBytes(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds");
+                if (ddsData[4] != 124)
+            {
+                Debug.LogError("ERROR: Wrong DDS header, unable to load");
+                return GetPinkTex();
+            }
+
+            int height = ddsData[13] * 256 + ddsData[12];
+            int width = ddsData[17] * 256 + ddsData[16];
+
+            int DDS_HEADER_SIZE = 128;
+            byte[] dxtBytes = new byte[ddsData.Length - DDS_HEADER_SIZE];
+            Buffer.BlockCopy(ddsData, DDS_HEADER_SIZE, dxtBytes, 0, ddsData.Length - DDS_HEADER_SIZE);
+
+
+            Texture2D tex = new Texture2D(width, height,TextureFormat.DXT1,false);
+            tex.LoadRawTextureData(dxtBytes);
+            tex.Apply();
+
+            Debug.Log("Texture load ok");
+
+            return tex;
+        }
+
+        //------------------------------------------PRIVATE-----------------------------------------------------
+        private Texture2D GetPinkTex()
+        {
+            Texture2D tex = new Texture2D(512, 512);
+            Color fillColor = new Color(255, 192, 203);
+            Color[] fillColorArray = tex.GetPixels();
+
+            for (int i = 0; i < fillColorArray.Length; i++)
+            {
+                fillColorArray[i] = fillColor;
+            }
+
+            tex.SetPixels(fillColorArray);
+            tex.Apply();
+
+            return tex;
+        }
+    }
 }
