@@ -11,6 +11,7 @@ public class Main : MonoBehaviour
 {
     Parser parser = new Parser();
     Scenery scenery = new Scenery();
+    Resources.ResourceLoader resourceLoader = new Resources.ResourceLoader();
 
     Dictionary<string, Texture2D> TextureBank = new Dictionary<string, Texture2D>();
     public void LoadScenery(string path)
@@ -25,6 +26,8 @@ public class Main : MonoBehaviour
 
     public void Deserialize(string path) //scn deserializer Created by skorakora (Daniel Skorski)
     {
+
+        Debug.Log("Starting The Mikols - Maszyna scenery deserializer. Please wait...");
 
         FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read);
         string token;
@@ -627,6 +630,8 @@ public class Main : MonoBehaviour
     private void Deserialize_Triangles(FileStream file, float range_max, float range_min, string name)
     {
         string token;
+        string textureName;
+        Texture2D texture;
         while (true)
         {
             token = parser.GetToken(file);
@@ -641,15 +646,17 @@ public class Main : MonoBehaviour
             if (token == "material")
             {
                 Deserialize_Material(file, terrain);
+                token = parser.GetToken(file);
             }
+            textureName = token;
             try
             {
-
+                texture = TextureBank[textureName];
             }
-            catch (Exception)
+            catch (KeyNotFoundException)
             {
 
-                throw;
+                TextureBank.Add(textureName, resourceLoader.LoadTexture(textureName));
             }
 
 
@@ -657,8 +664,8 @@ public class Main : MonoBehaviour
 
             if (token == "endtri")
             {
-                string root = Globals.SCN_folder_path;
-                scenery.AddMesh(terrain.GetMesh(), range_max, range_min, terrain.GetName());
+                texture = TextureBank[textureName];
+                scenery.AddMesh(terrain.GetMesh(), range_max, range_min, terrain.GetName(),texture);
                 return;
             }
         }
@@ -678,7 +685,7 @@ public class Main : MonoBehaviour
                 return;
             }
             //tutaj funkcje odpowiedzialne za odczyt materiału (na razie pusto)
-            else if (token == "endmaterial")
+            if (token == "endmaterial")
             {
                 return;
             }

@@ -12,10 +12,10 @@ public class Scenery : MonoBehaviour
         GameObject SCN_root = new GameObject("Scenery");
         //elementy scenerii
         GameObject obj = new GameObject();
-        Map.Add("terrain", AddCategory("terrain",SCN_root));
+        Map.Add("terrain", AddCategory("terrain", SCN_root));
     }
 
-    GameObject AddCategory(string name,GameObject Root)//porządkuje obiekty w drzewku by nie było syfu
+    GameObject AddCategory(string name, GameObject Root)//porządkuje obiekty w drzewku by nie było syfu
     {
         GameObject obj = new GameObject(name);
         obj.transform.parent = Root.transform;
@@ -25,14 +25,16 @@ public class Scenery : MonoBehaviour
 
     //-----------------------------------------------------METHODS---------------------------------------------------------
 
-    public void AddMesh(Mesh mesh,float range_max, float range_min,string name)
+    public void AddMesh(Mesh mesh, float range_max, float range_min, string name, Texture2D texture)
     {
         GameObject ROOT = Map["terrain"];
         GameObject obj = new GameObject(name);
         obj.transform.parent = ROOT.transform;
         MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
-        obj.AddComponent<MeshRenderer>();
+        MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
         meshFilter.mesh = mesh;
+        meshRenderer.material.mainTexture = texture;
+
     }
 }
 

@@ -10,6 +10,7 @@ public class Terrain : MonoBehaviour
     List<Vector2> UV = new List<Vector2>();
     List<int> triangles = new List<int>();
     int triangle_counter = 0;
+    Texture2D texture;
 
     public Terrain(string _name)
     {
@@ -24,16 +25,6 @@ public class Terrain : MonoBehaviour
         UV.Add(_UV);
         triangles.Add(triangle_counter);
         triangle_counter++;
-    }
-
-    public void SetMaterial()
-    {
-
-    }
-
-    public void SetTexture(Texture2D texture)
-    {
-
     }
 
     public Mesh GetMesh()
