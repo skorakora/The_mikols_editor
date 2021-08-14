@@ -8,8 +8,7 @@ public class Editor_canvas_main : MonoBehaviour
 
     void Start()
     {
-       Main main = new Main();
-       main.LoadScenery(Globals.SCN_path);
+
     }
     // Powrót do głównego menu
     public void Back_to_main_menu()
