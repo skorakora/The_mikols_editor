@@ -15,12 +15,6 @@
 //        Map.Add("terrain", AddCategory("terrain", SCN_root));
 //    }
 
-//    GameObject AddCategory(string name, GameObject Root)//porządkuje obiekty w drzewku by nie było syfu
-//    {
-//        GameObject obj = new GameObject(name);
-//        obj.transform.parent = Root.transform;
-//        return obj;
-//    }
 
 
 //    //-----------------------------------------------------METHODS---------------------------------------------------------
