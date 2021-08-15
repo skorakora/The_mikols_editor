@@ -323,14 +323,11 @@ namespace Resources
 
 
     }
-    public class ResourceLoader
+    public class ResourceLoader : MonoBehaviour
     {
         public Texture2D LoadTexture(string tex_path)
         {
             Globals.Simulator_root = "C:\\Program Files (x86)\\Maszyna";
-
-
-            Debug.Log("Loading texture: " + Globals.Simulator_root + "\\textures\\" + tex_path+".dds");
 
 
             if (!File.Exists(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds"))
@@ -354,7 +351,7 @@ namespace Resources
             Buffer.BlockCopy(ddsData, DDS_HEADER_SIZE, dxtBytes, 0, ddsData.Length - DDS_HEADER_SIZE);
 
 
-            Texture2D tex = new Texture2D(width, height,TextureFormat.DXT1,false);
+            Texture2D tex = new Texture2D(width, height,TextureFormat.DXT5,false);
             tex.LoadRawTextureData(dxtBytes);
             tex.Apply();
 

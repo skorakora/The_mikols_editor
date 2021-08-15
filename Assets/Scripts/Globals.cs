@@ -39,5 +39,14 @@ public static class Globals   //----------------------------------Global Variabl
         }
     }
 
+    public static int SCNLoaderInstanceCounter;//licznik aktywnych instancji loadera scenerii
+    public static bool IsSCNLoaderActive()
+    {
+        if (SCNLoaderInstanceCounter == 0)
+        {
+            return false;
+        }
+        return true;
+    }
 
 }

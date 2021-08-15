@@ -9,21 +9,26 @@ using System.Globalization;
 
 public class Scenery : MonoBehaviour
 {
+    long LoaderPosition = 0;
+    long SceneryFileSize = 0;
+
+    public GameObject canvas;
+
     Dictionary<string, GameObject> Categories = new Dictionary<string, GameObject>();//List of categories on scenery (objects avaible to spawn)
     Dictionary<string, Texture2D> TextureBank = new Dictionary<string, Texture2D>();
 
-
-    Parser parser = new Parser();
     Resources.ResourceLoader resourceLoader = new Resources.ResourceLoader();
 
-
+    Parser parser = new Parser();
     void Start()//Scenery initialization from Globals
     {
-        
+
         Categories.Add("terrain", AddCategory("terrain"));
         string path = Globals.SCN_path;
+
+        Debug.Log("Starting The Mikols - Maszyna scenery deserializer. Please wait...");
+        Globals.SCNLoaderInstanceCounter = 0;
         StartCoroutine(Deserialize(path));
-        Debug.Log("finished loading scenery!");
     }
 
     GameObject AddCategory(string name)//porządkuje obiekty w drzewku by nie było syfu
@@ -47,15 +52,32 @@ public class Scenery : MonoBehaviour
 
     }
 
-    IEnumerator Deserialize(string path) //scn deserializer Created by skorakora (Daniel Skorski)
+    public IEnumerator Deserialize(string path) //scn deserializer Created by skorakora (Daniel Skorski)
     {
-
-        Debug.Log("Starting The Mikols - Maszyna scenery deserializer. Please wait...");
-
+        Editor_canvas_main editor_Canvas_Main = canvas.GetComponent<Editor_canvas_main>();
+        long LocalLoaderPosition = 0;
+        int counter = 0;
         FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read);
+        Globals.SCNLoaderInstanceCounter++;
+        SceneryFileSize = file.Length + SceneryFileSize;
         string token;
         while (true)
         {
+            counter++;
+            if (counter == 100)
+            {
+                float progress;
+                long filePositionChange;
+
+                counter = 0;
+                filePositionChange = file.Position - LocalLoaderPosition;
+                LoaderPosition = filePositionChange + LoaderPosition;
+                LocalLoaderPosition = filePositionChange + LocalLoaderPosition;
+                progress = Convert.ToSingle((Convert.ToSingle(LoaderPosition) / Convert.ToSingle(SceneryFileSize)) * 100);
+                editor_Canvas_Main.SetProgress(progress / 100);
+                Debug.Log(progress + "%");
+                yield return null;
+            }
             token = parser.GetToken(file);
             if (token == "atmo")
             {
@@ -96,7 +118,6 @@ public class Scenery : MonoBehaviour
             else if (token == "node")
             {
                 Deserialize_Node(file);
-                yield return null;
             }
             else if (token == "origin")
             {
@@ -155,11 +176,12 @@ public class Scenery : MonoBehaviour
         }
 
         file.Close();
-        yield return null;
+        Globals.SCNLoaderInstanceCounter--;
+
+
 
 
     }
-
     //-----------------------------------------------------PRIVATE METHODS-------------------------------------------------
     private void Deserialize_Atmo(FileStream file)
     {
@@ -276,7 +298,7 @@ public class Scenery : MonoBehaviour
             }
             else if (token.Contains(".ctr"))
             {
-                Deserialize(Globals.SCN_folder_path + "/" + token);
+                StartCoroutine(Deserialize(Globals.SCN_folder_path + "/" + token));
             }
             else if (token == "end")
             {
@@ -674,9 +696,10 @@ public class Scenery : MonoBehaviour
             }
             catch (KeyNotFoundException)
             {
-
+                Debug.Log("Loading texture: " + Globals.Simulator_root + "\\textures\\" + textureName + ".dds");
                 TextureBank.Add(textureName, resourceLoader.LoadTexture(textureName));
             }
+
 
 
             token = Deserialize_Vertex(file, terrain, token);
