@@ -126,7 +126,7 @@ public class Main : MonoBehaviour
             }
             else
             {
-                Debug.Log("ERROR: unknown function");
+                Debug.Log("ERROR: unknown function: "+token+"  at: ");
             }
         }
 

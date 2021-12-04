@@ -327,7 +327,7 @@ namespace Resources
     {
         public Texture2D LoadTexture(string tex_path)
         {
-            Globals.Simulator_root = "C:\\Program Files (x86)\\Maszyna";
+            Globals.Simulator_root = "C:\\Program Files (x86)\\MaSzyna";
 
 
             if (!File.Exists(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds"))
@@ -335,7 +335,7 @@ namespace Resources
                 Debug.LogError("ERROR: File not found");
                 return GetPinkTex();
             }
-
+            
             byte[] ddsData = File.ReadAllBytes(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds");
                 if (ddsData[4] != 124)
             {
@@ -351,13 +351,36 @@ namespace Resources
             Buffer.BlockCopy(ddsData, DDS_HEADER_SIZE, dxtBytes, 0, ddsData.Length - DDS_HEADER_SIZE);
 
 
-            Texture2D tex = new Texture2D(width, height,TextureFormat.DXT5,false);
-            tex.LoadRawTextureData(dxtBytes);
-            tex.Apply();
+            if (ddsData[87] == 49) //load DXT1
+            {
+                Texture2D tex = new Texture2D(width, height, TextureFormat.DXT1, false);
+                tex.LoadRawTextureData(dxtBytes);
+                tex.Apply();
 
-            Debug.Log("Texture load ok");
+                Debug.Log("Texture load ok");
 
-            return tex;
+                return tex;
+            }
+            if (ddsData[87] == 53 ) //load DXT5
+            {
+                Texture2D tex = new Texture2D(width, height, TextureFormat.DXT5, false);
+                tex.LoadRawTextureData(dxtBytes);
+                tex.Apply();
+
+                Debug.Log("Texture load ok");
+
+                return tex;
+            }
+            else
+            {
+                Debug.LogError("ERROR: Only DXT1 and DXT5 formats are supported");
+                return GetPinkTex();
+            }
+
+
+
+
+
         }
 
         //------------------------------------------PRIVATE-----------------------------------------------------

@@ -171,7 +171,7 @@ public class Scenery : MonoBehaviour
             }
             else
             {
-                Debug.Log("ERROR: unknown function");
+                Debug.Log("ERROR: unknown function: "+token);
             }
         }
 
