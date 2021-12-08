@@ -28,9 +28,9 @@ public class Editor_canvas : MonoBehaviour
         StreamReader plik = new StreamReader(Settings_save_path);
         plik.ReadLine();
         string[] data = plik.ReadLine().Split(';');
-        path = data[1];
-        Globals.SCN_folder_path = data[1];
-        scenery_path_text.text = "Obecnie szukam scenerii w:" + data[1];
+        path = data[1]+@"\scenery";
+        Globals.Simulator_root = data[1];
+        scenery_path_text.text = "Obecnie szukam scenerii w:" + data[1]+@"\scenery\";
         plik.Close();
 
         DirectoryInfo dir = new DirectoryInfo(path);
@@ -74,4 +74,9 @@ public class Editor_canvas : MonoBehaviour
         SceneManager.LoadScene("Editor");
     }
 
+    public void Create_new_scenery()
+    {
+        Globals.CreateNewScenery = true;
+        SceneManager.LoadScene("Editor");
+    }
 }

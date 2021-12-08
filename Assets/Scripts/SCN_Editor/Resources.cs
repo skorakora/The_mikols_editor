@@ -323,16 +323,16 @@ namespace Resources
 
 
     }
-    public class ResourceLoader : MonoBehaviour
+    public static class ResourceLoader
     {
-        public Texture2D LoadTexture(string tex_path)
+        public static Texture2D LoadTexture(string tex_path)
         {
             Globals.Simulator_root = "C:\\Program Files (x86)\\MaSzyna";
 
 
             if (!File.Exists(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds"))
             {
-                Debug.LogError("ERROR: File not found");
+                Debug.LogError("ERROR: File not found"+ Globals.Simulator_root + "\\textures\\" + tex_path + ".dds");
                 return GetPinkTex();
             }
             
@@ -384,7 +384,7 @@ namespace Resources
         }
 
         //------------------------------------------PRIVATE-----------------------------------------------------
-        private Texture2D GetPinkTex()
+        private static Texture2D GetPinkTex()
         {
             Texture2D tex = new Texture2D(512, 512);
             Color fillColor = new Color(255, 192, 203);

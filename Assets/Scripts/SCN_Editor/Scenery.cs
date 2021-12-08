@@ -13,22 +13,31 @@ public class Scenery : MonoBehaviour
     long SceneryFileSize = 0;
 
     public GameObject canvas;
+    public const string str = "objects";
+    public GameObject Track;
 
     Dictionary<string, GameObject> Categories = new Dictionary<string, GameObject>();//List of categories on scenery (objects avaible to spawn)
-    Dictionary<string, Texture2D> TextureBank = new Dictionary<string, Texture2D>();
 
-    Resources.ResourceLoader resourceLoader = new Resources.ResourceLoader();
 
     Parser parser = new Parser();
     void Start()//Scenery initialization from Globals
     {
+        //InitializeScenery(); Initialization of scenery, before deserialization starts.
+        Categories.Add("terrain", AddCategory("terrain"));//add to InitializeScenery()
+        Categories.Add("track", AddCategory("track"));//add to InitializeScenery()
 
-        Categories.Add("terrain", AddCategory("terrain"));
-        string path = Globals.SCN_path;
+        if (Globals.CreateNewScenery == false)
+        {
+            string path = Globals.Simulator_root + @"\scenery\" + Globals.Scenery_name;
 
-        Debug.Log("Starting The Mikols - Maszyna scenery deserializer. Please wait...");
-        Globals.SCNLoaderInstanceCounter = 0;
-        StartCoroutine(Deserialize(path));
+            Debug.Log("Starting The Mikols - Maszyna scenery deserializer. Please wait...");
+            Globals.SCNLoaderInstanceCounter = 0;
+            StartCoroutine(Deserialize(path));
+            return;
+        }
+
+        GenerateDefaultScenery();
+
     }
 
     GameObject AddCategory(string name)//porządkuje obiekty w drzewku by nie było syfu
@@ -36,6 +45,51 @@ public class Scenery : MonoBehaviour
         GameObject obj = new GameObject(name);
         obj.transform.parent = this.transform;
         return obj;
+    }
+
+    private void GenerateDefaultScenery()// do poprawki
+    {
+        Mesh mesh = new Mesh();
+
+        List<Vector3> vrt = new List<Vector3>();
+        List<Vector3> normals = new List<Vector3>();
+        List<Vector2> UV = new List<Vector2>();
+
+        List<int> triangles = new List<int>();
+        vrt.Add(new Vector3(-200, 0, 200));
+        UV.Add(new Vector2(-200f, -200f));
+
+        vrt.Add(new Vector3(-200, 0, -200));
+        UV.Add(new Vector2(200, -200f));
+
+        vrt.Add(new Vector3(200, 0, 200));
+        UV.Add(new Vector2(-200f, 200));
+
+        vrt.Add(new Vector3(200, 0, -200));
+        UV.Add(new Vector2(200, 200));
+
+        normals.Add(Vector3.up);
+        normals.Add(Vector3.up);
+        normals.Add(Vector3.up);
+        normals.Add(Vector3.up);
+
+        triangles.Add(0);
+        triangles.Add(3);
+        triangles.Add(1);
+
+        triangles.Add(0);
+        triangles.Add(2);
+        triangles.Add(3);
+
+        mesh.vertices = vrt.ToArray();
+        mesh.triangles = triangles.ToArray();
+        mesh.normals = normals.ToArray();
+        mesh.uv = UV.ToArray();
+
+        AddMesh(mesh, 1, 0, "Default Terrain", Globals.GetTexture("grassdarkgreen4"));
+        //AddTrack(pk1,pk2,pk3,pk4,default,HelloWorld);
+        //PlaceTrain(HelloWorld,EN57-001RA,EN57-001RS,EN57-001RB)
+
     }
 
     //-----------------------------------------------------METHODS---------------------------------------------------------
@@ -49,6 +103,66 @@ public class Scenery : MonoBehaviour
         MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
         meshFilter.mesh = mesh;
         meshRenderer.material.mainTexture = texture;
+
+    }
+
+    public void AddTrack(
+        float range_max,
+        float range_min,
+        string name,
+        string track_type,
+        float length,
+        float widith,
+        float friction,
+        float stukot,
+        float jakosc,
+        float uszkodzenia,
+        string srodowisko,
+        string widocznosc,
+        string tekstura1,
+        string powtarzanie_tekstury,
+        string tekstura2,
+        float wysokosc_podsypki,
+        float szerokosc_podsypki,
+        float szerokosc_pochylenia,
+        Vector3 Point1,
+        float przechylka1,
+        Vector3 ControlVector1,
+        Vector3 ControlVector2,
+        Vector3 Point2,
+        float przechylka2,
+        float promien
+        )
+    {
+        GameObject ROOT = Categories["track"];
+        GameObject obj = Instantiate(Track, new Vector3(0,0,0), Quaternion.identity);
+        obj.transform.parent = ROOT.transform;
+        Track_gen track = obj.GetComponent<Track_gen>();
+        track.range_max = range_max;
+        track.range_min = range_min;
+        track.name = name;
+        track.length = length;
+        track.widith = widith;
+        track.friction = friction;
+        track.stukot = stukot;
+        track.jakosc = jakosc;
+        track.uszkodzenia = uszkodzenia;
+        track.srodowisko = srodowisko;
+        track.widocznosc = widocznosc;
+        track.tekstura1 = tekstura1;
+        track.powtarzanie_tekstury = powtarzanie_tekstury;
+        track.tekstura2 = tekstura2;
+        track.wysokosc_podsypki = wysokosc_podsypki;
+        track.szerokosc_podsypki = szerokosc_podsypki;
+        track.szerokosc_pochylenia = szerokosc_pochylenia;
+        track.Point1 = Point1;
+        track.przechylka1 = przechylka1;
+        track.ControlVector1 = ControlVector1;
+        track.ControlVector2 = ControlVector2;
+        track.Point2 = Point2;
+        track.przechylka2 = przechylka2;
+        track.promien = promien;
+        track.gen_track();//generuje ustawiony tor
 
     }
 
@@ -171,7 +285,7 @@ public class Scenery : MonoBehaviour
             }
             else
             {
-                Debug.Log("ERROR: unknown function: "+token);
+                Debug.Log("ERROR: unknown function: " + token);
             }
         }
 
@@ -182,7 +296,37 @@ public class Scenery : MonoBehaviour
 
 
     }
+
+    public IEnumerable Serialize(string path)
+    {
+        FileStream file = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
+        for (int i = 0; i < Categories.Count; i++)
+        {
+            if (Categories.ElementAt(i).Key == "terrain")
+            {
+                GameObject ROOT = Categories["terrain"];
+                foreach (Transform child in ROOT.transform)
+                {
+
+                }
+            }
+            yield return null;
+        }
+
+    }
+
     //-----------------------------------------------------PRIVATE METHODS-------------------------------------------------
+
+    //-------------------------------------------------//-Serializer--//----------------------------------------------------
+
+    private void SerializeTrack(GameObject obj, FileStream file)
+    {
+        Track_gen Track = obj.GetComponent<Track_gen>();
+
+    }
+
+
+    // -------------------------------------------------//-Deserializer-//----------------------------------------------------
     private void Deserialize_Atmo(FileStream file)
     {
         string token;
@@ -294,11 +438,11 @@ public class Scenery : MonoBehaviour
             }
             else if (token.Contains(".scm"))
             {
-                StartCoroutine(Deserialize(Globals.SCN_folder_path + "/" + token));
+                StartCoroutine(Deserialize(Globals.Simulator_root+@"\scenery" + "/" + token));
             }
             else if (token.Contains(".ctr"))
             {
-                StartCoroutine(Deserialize(Globals.SCN_folder_path + "/" + token));
+                StartCoroutine(Deserialize(Globals.Simulator_root + @"\scenery" + "/" + token));
             }
             else if (token == "end")
             {
@@ -372,7 +516,7 @@ public class Scenery : MonoBehaviour
         }
         else if (token == "track")
         {
-            Deserialize_Track(file, range_max, range_min);
+            Deserialize_Track(file, range_max, range_min, name);
         }
         else if (token == "traction")
         {
@@ -614,7 +758,7 @@ public class Scenery : MonoBehaviour
         }
     }
 
-    private void Deserialize_Track(FileStream file, float range_max, float range_min)
+    private void Deserialize_Track(FileStream file, float range_max, float range_min,string name)
     {
         string token;
         while (true)
@@ -624,8 +768,49 @@ public class Scenery : MonoBehaviour
             {
                 return;
             }
-            //tutaj funkcje odpowiedzialne za czas
-            else if (token == "endtrack")
+            string track_type = token;
+            if (token == "normal")
+            {
+                float length = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float widith = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float friction = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float stukot = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float jakosc = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float uszkodzenia = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                string srodowisko = parser.GetToken(file);
+                string widocznosc = parser.GetToken(file);
+                string tekstura1 = parser.GetToken(file);
+                string powtarzanie_tekstury = parser.GetToken(file);
+                string tekstura2 = parser.GetToken(file);
+                float wysokosc_podsypki = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float szerokosc_podsypki = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float szerokosc_pochylenia = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Vector3 Point1 = new Vector3();
+                Point1.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Point1.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Point1.z = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float przechylka1 = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Vector3 ControlVector1 = new Vector3();
+                ControlVector1.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                ControlVector1.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                ControlVector1.z = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Vector3 ControlVector2 = new Vector3();
+                ControlVector2.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                ControlVector2.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                ControlVector2.z = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Vector3 Point2 = new Vector3();
+                Point2.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Point2.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                Point2.z = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float przechylka2 = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+                float promien = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
+
+                AddTrack(range_max, range_min, name, track_type, length, widith, friction, stukot, jakosc, uszkodzenia, srodowisko, widocznosc, tekstura1, powtarzanie_tekstury, tekstura2, wysokosc_podsypki, szerokosc_podsypki, szerokosc_pochylenia, Point1, przechylka1, ControlVector1, ControlVector2, Point2, przechylka2, promien);
+
+            }
+
+
+            if (token == "endtrack")
             {
                 return;
             }
@@ -690,23 +875,14 @@ public class Scenery : MonoBehaviour
                 token = parser.GetToken(file);
             }
             textureName = token;
-            try
-            {
-                texture = TextureBank[textureName];
-            }
-            catch (KeyNotFoundException)
-            {
-                Debug.Log("Loading texture: " + Globals.Simulator_root + "\\textures\\" + textureName + ".dds");
-                TextureBank.Add(textureName, resourceLoader.LoadTexture(textureName));
-            }
 
-
+            texture = Globals.GetTexture(textureName);
 
             token = Deserialize_Vertex(file, terrain, token);
 
             if (token == "endtri")
             {
-                texture = TextureBank[textureName];
+                texture = Globals.GetTexture(textureName);
                 AddMesh(terrain.GetMesh(), range_max, range_min, terrain.GetName(), texture);
                 return;
             }
@@ -739,7 +915,7 @@ public class Scenery : MonoBehaviour
         Vector3 normal = new Vector3();
         Vector2 UV = new Vector2();
 
-    start_vertex:
+        start_vertex:
 
         vertex.x = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
         vertex.y = float.Parse(parser.GetToken(file), CultureInfo.InvariantCulture);
@@ -771,4 +947,10 @@ public class Scenery : MonoBehaviour
         Debug.LogWarning("Bad Triangle at:" + terrain.name);
         return "endtri";
     }
+
+    //--------------------------------------------------Pozostałe narzędzia----------------------------------------
+
+
 }
+
+

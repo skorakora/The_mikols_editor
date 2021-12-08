@@ -11,9 +11,7 @@ public class Main : MonoBehaviour
 {
     Parser parser = new Parser();
     Scenery scenery = new Scenery();
-    Resources.ResourceLoader resourceLoader = new Resources.ResourceLoader();
 
-    Dictionary<string, Texture2D> TextureBank = new Dictionary<string, Texture2D>();
     void Start()
     {
 
@@ -254,11 +252,11 @@ public class Main : MonoBehaviour
             }
             else if (token.Contains(".scm"))
             {
-                Deserialize(Globals.SCN_folder_path + "/" + token);
+                Deserialize(Globals.Simulator_root+@"\scenery" + "/" + token);
             }
             else if (token.Contains(".ctr"))
             {
-                Deserialize(Globals.SCN_folder_path + "/" + token);
+                Deserialize(Globals.Simulator_root + @"\scenery" + "/" + token);
             }
             else if (token == "end")
             {
@@ -650,22 +648,16 @@ public class Main : MonoBehaviour
                 token = parser.GetToken(file);
             }
             textureName = token;
-            try
-            {
-                texture = TextureBank[textureName];
-            }
-            catch (KeyNotFoundException)
-            {
 
-                TextureBank.Add(textureName, resourceLoader.LoadTexture(textureName));
-            }
+            texture = Globals.GetTexture(textureName);
+
 
 
             token = Deserialize_Vertex(file, terrain, token);
 
             if (token == "endtri")
             {
-                texture = TextureBank[textureName];
+                texture = Globals.GetTexture(textureName);
                 scenery.AddMesh(terrain.GetMesh(), range_max, range_min, terrain.GetName(), texture);
                 return;
             }
