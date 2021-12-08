@@ -332,8 +332,13 @@ namespace Resources
 
             if (!File.Exists(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds"))
             {
-                Debug.LogError("ERROR: File not found"+ Globals.Simulator_root + "\\textures\\" + tex_path + ".dds");
-                return GetPinkTex();
+                tex_path = "1435mm\\" + tex_path;
+                if (!File.Exists(Globals.Simulator_root + "\\textures\\"+tex_path + ".dds"))
+                {
+                    Debug.LogError("ERROR: File not found" + Globals.Simulator_root + "\\textures\\" + tex_path + ".dds");
+                    return GetPinkTex();
+                }
+
             }
             
             byte[] ddsData = File.ReadAllBytes(Globals.Simulator_root + "\\textures\\" + tex_path + ".dds");

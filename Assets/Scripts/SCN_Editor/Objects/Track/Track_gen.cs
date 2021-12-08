@@ -56,21 +56,22 @@ public class Track_gen : MonoBehaviour
         Point1 = EditPoint1.transform.position;
         Point2 = EditPoint2.transform.position;
 
-        ControlVector1 = (Point2 - Point1) / 4;
+        //ControlVector1 = (Point2 - Point1) / 4;
         ControlVector2 = (Point2 - Point1) / -4;
 
         gen_track();
-        
+
     }
-    public void gen_track() 
+    public void gen_track()
     {
 
-        Vector3[] points = CalculateEvenlySpacedPoints(Point1, Point1+ControlVector1, Point2+ControlVector2, Point2);
+        Vector3[] points = CalculateEvenlySpacedPoints(Point1, Point1 + ControlVector1, Point2 + ControlVector2, Point2);
         GetComponent<MeshFilter>().mesh = CreateTrackMesh(points);
         int textureRepeat = Mathf.RoundToInt(tiling * points.Length * spacing * .05f);
+
         GetComponent<MeshRenderer>().material.mainTexture = Globals.GetTexture(tekstura2);
         GetComponent<MeshRenderer>().sharedMaterial.mainTextureScale = new Vector2(1, textureRepeat);
-        
+
     }
 
     public void SerializeObject(FileStream file)

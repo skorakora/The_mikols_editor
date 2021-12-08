@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class camera_movement : MonoBehaviour
 {
+    public GameObject cursor;
+    public Camera MainCamera;
+
+    GameObject trackpoint;
+    bool EditTrack = false;
+
+    void Start()
+    {
+        cursor = Instantiate(cursor, new Vector3(0, 0, 0), Quaternion.identity);  //spawns cursor on the map 
+        
+    }
     // Co każdy frame
     void Update()
     {
@@ -44,5 +55,46 @@ public class camera_movement : MonoBehaviour
             Application.Quit();
         }
 
+        Ray ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast (ray,out hitInfo))
+        {
+            cursor.transform.position = hitInfo.point;
+        }
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            EditTrack = false;
+            trackpoint.GetComponent<SphereCollider>().enabled = true;
+        }
+        if (EditTrack == true)
+        {
+            trackpoint.transform.position = cursor.transform.position;
+            TrackPointController trackPointController = trackpoint.GetComponent<TrackPointController>();
+            trackPointController.regenerateTrack();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Ray ray1 = MainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo1;
+            if (Physics.Raycast(ray, out hitInfo1))
+            {
+
+                TrackPointController trackPointController = hitInfo.transform.gameObject.GetComponent<TrackPointController>();
+                if (trackPointController == null)
+                {
+                    return;
+                }
+                else
+                {
+                    EditTrack = true;
+                    trackpoint = hitInfo.transform.gameObject;
+                    trackpoint.GetComponent<SphereCollider>().enabled = false;
+                }
+            }
+        }
     }
+
+
 }

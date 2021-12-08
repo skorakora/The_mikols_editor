@@ -101,6 +101,8 @@ public class Scenery : MonoBehaviour
         obj.transform.parent = ROOT.transform;
         MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+        MeshCollider collider = obj.AddComponent<MeshCollider>();
+        collider.sharedMesh = mesh;
         meshFilter.mesh = mesh;
         meshRenderer.material.mainTexture = texture;
 
