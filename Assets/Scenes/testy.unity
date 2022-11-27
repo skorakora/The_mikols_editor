@@ -407,5 +407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad74326e50c48904f85a4781db7363c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TrackNormal: {fileID: 8224010099221684849, guid: 03d740a4ff928da4da4259bef0db98d4,
+    type: 3}
   buffer: []
   serialized: 

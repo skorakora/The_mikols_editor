@@ -69,9 +69,7 @@ public class camera_movement : MonoBehaviour
         }
         if (EditTrack == true)
         {
-            trackpoint.transform.position = cursor.transform.position;
-            TrackPointController trackPointController = trackpoint.GetComponent<TrackPointController>();
-            trackPointController.regenerateTrack();
+
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -81,17 +79,6 @@ public class camera_movement : MonoBehaviour
             if (Physics.Raycast(ray, out hitInfo1))
             {
 
-                TrackPointController trackPointController = hitInfo.transform.gameObject.GetComponent<TrackPointController>();
-                if (trackPointController == null)
-                {
-                    return;
-                }
-                else
-                {
-                    EditTrack = true;
-                    trackpoint = hitInfo.transform.gameObject;
-                    trackpoint.GetComponent<SphereCollider>().enabled = false;
-                }
             }
         }
     }

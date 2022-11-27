@@ -5,13 +5,16 @@ using UnityEngine;
 
 public class TrackTester : MonoBehaviour
 {
+
+    public GameObject TrackNormal;
     public List<string> buffer = new List<string>();
 
     public string serialized;
     void Start()
     {
+        Instantiate(TrackNormal, new Vector3(0, 0, 0),Quaternion.identity);
         Parser parser = gameObject.AddComponent(typeof(Parser)) as Parser;
-        Normal normal = gameObject.AddComponent(typeof(Normal)) as Normal;
+        Normal normal = TrackNormal.GetComponent(typeof(Normal)) as Normal;
 
         FileStream file = new FileStream("C:\\Users\\Komp\\Documents\\test.scn", FileMode.Open, FileAccess.Read);
 

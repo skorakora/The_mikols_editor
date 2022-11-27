@@ -192,32 +192,7 @@ public class Scenery : MonoBehaviour
         GameObject ROOT = Categories["track"];
         GameObject obj = Instantiate(Track, new Vector3(0,0,0), Quaternion.identity);
         obj.transform.parent = ROOT.transform;
-        Track_gen track = obj.GetComponent<Track_gen>();
-        track.range_max = range_max;
-        track.range_min = range_min;
-        track.name = name;
-        track.length = length;
-        track.widith = widith;
-        track.friction = friction;
-        track.stukot = stukot;
-        track.jakosc = jakosc;
-        track.uszkodzenia = uszkodzenia;
-        track.srodowisko = srodowisko;
-        track.widocznosc = widocznosc;
-        track.tekstura1 = tekstura1;
-        track.powtarzanie_tekstury = powtarzanie_tekstury;
-        track.tekstura2 = tekstura2;
-        track.wysokosc_podsypki = wysokosc_podsypki;
-        track.szerokosc_podsypki = szerokosc_podsypki;
-        track.szerokosc_pochylenia = szerokosc_pochylenia;
-        track.Point1 = Point1;
-        track.przechylka1 = przechylka1;
-        track.ControlVector1 = ControlVector1;
-        track.ControlVector2 = ControlVector2;
-        track.Point2 = Point2;
-        track.przechylka2 = przechylka2;
-        track.promien = promien;
-        track.gen_track();//generuje ustawiony tor
+
 
     }
 
@@ -376,7 +351,7 @@ public class Scenery : MonoBehaviour
 
     private void SerializeTrack(GameObject obj, FileStream file)
     {
-        Track_gen Track = obj.GetComponent<Track_gen>();
+        //Track_gen Track = obj.GetComponent<Track_gen>();
 
     }
 

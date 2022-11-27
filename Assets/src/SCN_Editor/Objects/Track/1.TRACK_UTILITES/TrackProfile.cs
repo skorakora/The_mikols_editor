@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Profile : MonoBehaviour
+public static class TrackProfile
 {
 
-    public Vector2[] GetTrackProfile(float trackWidth,float texHeight ,float texWidth, float texSlope)
+    public static Vector2[] GetTrackProfile(float trackWidth,float texHeight ,float texWidth, float texSlope)
     {
         List<Vector2> vertices = new List<Vector2>();
 
@@ -20,7 +20,7 @@ public class Profile : MonoBehaviour
         return vertices.ToArray();
     }
 
-    public Vector2[] GetRailProfile()
+    public static Vector2[] GetRailProfile()
     {
         List<Vector2> vertices = new List<Vector2>();
 
@@ -41,5 +41,16 @@ public class Profile : MonoBehaviour
 
         return vertices.ToArray();
     }
+
+
+    public static Vector2[] GetRoadProfile()
+    {
+        List<Vector2> vertices = new List<Vector2>();
+
+        //TODO - ROAD PROFILE
+
+        return vertices.ToArray();
+    }
+
 
 }

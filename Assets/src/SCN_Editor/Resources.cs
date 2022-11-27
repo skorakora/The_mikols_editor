@@ -16,7 +16,7 @@ namespace Resources
         List<TRA> TRA0 = new List<TRA>();
         List<GameObject> submodelList = new List<GameObject>();
         VNT VNT0 = new VNT();
-        Math math = new Math();
+        //Math math = new Math();
 
         //------------------------------------------methods---------------------------------------------------------
 
@@ -154,7 +154,7 @@ namespace Resources
         public GameObject ToGameObject()
         {
 
-            Math math = new Math();
+            //Math math = new Math();
             GameObject root = new GameObject();
             root.name = ObjectName;
             submodelList = GetSubmodelList();
@@ -224,7 +224,7 @@ namespace Resources
             }
             for (int i = transformMatrixList.ToArray().Length; i > 1; i--)
             {
-                matrix = math.MultiplyTransformMatrix(matrix, transformMatrixList[i-2]);
+                //matrix = math.MultiplyTransformMatrix(matrix, transformMatrixList[i-2]);
             }
             return matrix;
         }
@@ -239,8 +239,8 @@ namespace Resources
             for (int i = 0; i < submodel_data[objNumber].vertexSize; i++)
             {
                 
-                vertices.Add(math.MultiplyTransformMatrixByVector(transformMatrix, VNT0.position[position + i]));
-                normals.Add(math.MultiplyTransformMatrixByVector(transformMatrix, VNT0.normal[position + i]));
+                //vertices.Add(math.MultiplyTransformMatrixByVector(transformMatrix, VNT0.position[position + i]));
+                //normals.Add(math.MultiplyTransformMatrixByVector(transformMatrix, VNT0.normal[position + i]));
                 uv.Add(VNT0.uv[position + i]);
                 triangles.Add(i);
             }
