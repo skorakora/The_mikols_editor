@@ -5,7 +5,7 @@ using UnityEngine;
 public static class Globals   //----------------------------------Global Variables--------------------------------------------------
 {
     public static Dictionary<string, Texture2D> TextureBank = new Dictionary<string, Texture2D>();
-    public static string Simulator_root;
+    public static string Simulator_root; //Ta zmienna przechowuje ścieżkę dostępu do symulatora
     public static string Scenery_name;
     public static int SCNLoaderInstanceCounter;//licznik aktywnych instancji loadera scenerii
     public static bool IsSCNLoaderActive()
